@@ -165,11 +165,10 @@ func main() {
 			ID:          id,
 		}
 
-		t, err := template.ParseFiles("templates/struct.tmpl")
+		t, err := template.New("structTemplate").Parse(templateString)
 		if err != nil {
 			log.Fatalln("Error parsing template:", err)
 		}
-
 		var output bytes.Buffer
 		err = t.Execute(&output, data)
 		if err != nil {
