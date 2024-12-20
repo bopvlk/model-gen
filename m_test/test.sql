@@ -1,5 +1,5 @@
-CREATE TABLE assistants (
-  project_id STRING(36) NOT NULL,
+CREATE TABLE tests (
+  test_id STRING(36) NOT NULL,
   assistant_id STRING(36) NOT NULL,
   name STRING(256) NOT NULL,
   purpose STRING(MAX),

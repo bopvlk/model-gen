@@ -1,4 +1,4 @@
-package m_lald
+package m_test
 
 import (
 	"context"
@@ -13,8 +13,8 @@ import (
 )
 
 const (
-	Package = "m_lald"
-	Table   = "assistants"
+	Package = "m_test"
+	Table   = "tests"
 	ID      = "assistant_id"
 )
 
@@ -35,7 +35,7 @@ func (c *Facade) logError(functionName string, msg string, h log.H) {
 }
 
 type Data struct {
-	ProjectId     string
+	TestId        string
 	AssistantId   string
 	Name          string
 	Purpose       spanner.NullString
@@ -55,7 +55,7 @@ type Data struct {
 type Field string
 
 const (
-	ProjectId     Field = "project_id"
+	TestId        Field = "test_id"
 	AssistantId   Field = "assistant_id"
 	Name          Field = "name"
 	Purpose       Field = "purpose"
@@ -73,7 +73,7 @@ const (
 )
 
 var allFieldsList = []Field{
-	ProjectId,
+	TestId,
 	AssistantId,
 	Name,
 	Purpose,
@@ -98,7 +98,7 @@ func (data *Data) fieldPtrs(fields []Field) []interface{} {
 	var ptrs []interface{}
 	for _, field := range fields {
 		fieldMap := map[Field]interface{}{
-			ProjectId:     &data.ProjectId,
+			TestId:        &data.TestId,
 			AssistantId:   &data.AssistantId,
 			Name:          &data.Name,
 			Purpose:       &data.Purpose,
@@ -121,7 +121,7 @@ func (data *Data) fieldPtrs(fields []Field) []interface{} {
 
 func (c *Facade) CreateMut(data *Data) *spanner.Mutation {
 	columns := []string{
-		ProjectId.String(),
+		TestId.String(),
 		AssistantId.String(),
 		Name.String(),
 		Purpose.String(),
@@ -139,7 +139,7 @@ func (c *Facade) CreateMut(data *Data) *spanner.Mutation {
 	}
 
 	values := []interface{}{
-		data.ProjectId,
+		data.TestId,
 		data.AssistantId,
 		data.Name,
 		data.Purpose,

@@ -78,7 +78,7 @@ func main() {
 	for _, path := range findFilePaths() {
 		file, err := os.Open(path)
 		if err != nil {
-			panic(err)
+			log.Fatalln("Error opening file:", err)
 		}
 		defer file.Close()
 
@@ -114,9 +114,7 @@ func main() {
 				if strings.Contains(matches[0], "NOT NULL") {
 					sqlType += " NOT NULL"
 				}
-				for i, t := range matches {
-					fmt.Println(i, t)
-				}
+
 				if strings.Contains(sqlType, "ARRAY") {
 					goType = parceArray(sqlType)
 				} else {
@@ -169,18 +167,18 @@ func main() {
 
 		t, err := template.ParseFiles("templates/struct.tmpl")
 		if err != nil {
-			panic(err)
+			log.Fatalln("Error parsing template:", err)
 		}
 
 		var output bytes.Buffer
 		err = t.Execute(&output, data)
 		if err != nil {
-			panic(err)
+			log.Fatalln("Error executing template:", err)
 		}
 
 		formattedOutput, err := format.Source(output.Bytes())
 		if err != nil {
-			panic(err)
+			log.Fatalln("Error formatting output:", err)
 		}
 
 		filePath := fmt.Sprintf("%s/%s.go", filepath.Dir(path), packageName)
