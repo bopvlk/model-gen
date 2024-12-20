@@ -31,5 +31,5 @@ For each Spanner table, the following methods are generated:
 You can install `model-gen` globally using `go install`:
 
 ```bash
-go install github.com/bopvlk/model-gen@v1.0.5
+go install github.com/bopvlk/model-gen@latest
 ```
