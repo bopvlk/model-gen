@@ -323,7 +323,7 @@ func (c *Facade) UpdateMut(
 		mutationData[field.String()] = value
 	}
 
-	return spanner.Update(Table, allFieldsList, mutationData)
+	return spanner.Update(Table, mutationData, mutationData)
 }
 
 func (c *Facade) Update(
