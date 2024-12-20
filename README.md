@@ -23,6 +23,8 @@ For each Spanner table, the following methods are generated:
 - **Automatic Code Generation**: Reads `.sql` files to generate Go models with essential operations.
 - **CRUD + Mutations**: Supports basic CRUD operations and batch mutations.
 - **Customizable**: Easily extendable to support additional methods.
+- **Facade Child Structs**: You should manually add child `Facade` structs if they exist.
+- **One SQL file per folder**: Each folder should contain only one SQL file. Having multiple files may cause errors.
 
 ## Installation
 
