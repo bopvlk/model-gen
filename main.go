@@ -108,12 +108,18 @@ func main() {
 				if strings.Contains(matches[1], "allow_commit_timestamp") {
 					continue
 				}
+				if strings.Contains(matches[1], "INTERLEAVE") {
+					continue
+				}
+
 				var goType string
 				columnName := matches[1]
 				sqlType := matches[2]
 				if strings.Contains(matches[0], "NOT NULL") {
 					sqlType += " NOT NULL"
 				}
+
+				log.Printf("Found -> Column: %s, Type: %s\n", columnName, sqlType)
 
 				if strings.Contains(sqlType, "ARRAY") {
 					goType = parceArray(sqlType)

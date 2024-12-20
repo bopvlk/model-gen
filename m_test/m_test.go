@@ -14,8 +14,8 @@ import (
 
 const (
 	Package = "m_test"
-	Table   = "tests"
-	ID      = "assistant_id"
+	Table   = "assistant_resources"
+	ID      = "resource_id"
 )
 
 type Facade struct {
@@ -35,59 +35,29 @@ func (c *Facade) logError(functionName string, msg string, h log.H) {
 }
 
 type Data struct {
-	TestId        string
-	AssistantId   string
-	Name          string
-	Purpose       spanner.NullString
-	Instructions  spanner.NullString
-	AiModel       spanner.NullString
-	OwnerUserId   spanner.NullString
-	LogoType      spanner.NullString
-	LogoKey       spanner.NullString
-	LogoLightPath spanner.NullString
-	LogoDarkPath  spanner.NullString
-	Deleted       spanner.NullBool
-	UpdatedAt     spanner.NullTime
-	CreatedAt     time.Time
-	IsDefault     spanner.NullBool
+	ProjectId   string
+	AssistantId string
+	ResourceId  string
+	UpdatedAt   spanner.NullTime
+	CreatedAt   time.Time
 }
 
 type Field string
 
 const (
-	TestId        Field = "test_id"
-	AssistantId   Field = "assistant_id"
-	Name          Field = "name"
-	Purpose       Field = "purpose"
-	Instructions  Field = "instructions"
-	AiModel       Field = "ai_model"
-	OwnerUserId   Field = "owner_user_id"
-	LogoType      Field = "logo_type"
-	LogoKey       Field = "logo_key"
-	LogoLightPath Field = "logo_light_path"
-	LogoDarkPath  Field = "logo_dark_path"
-	Deleted       Field = "deleted"
-	UpdatedAt     Field = "updated_at"
-	CreatedAt     Field = "created_at"
-	IsDefault     Field = "is_default"
+	ProjectId   Field = "project_id"
+	AssistantId Field = "assistant_id"
+	ResourceId  Field = "resource_id"
+	UpdatedAt   Field = "updated_at"
+	CreatedAt   Field = "created_at"
 )
 
 var allFieldsList = []Field{
-	TestId,
+	ProjectId,
 	AssistantId,
-	Name,
-	Purpose,
-	Instructions,
-	AiModel,
-	OwnerUserId,
-	LogoType,
-	LogoKey,
-	LogoLightPath,
-	LogoDarkPath,
-	Deleted,
+	ResourceId,
 	UpdatedAt,
 	CreatedAt,
-	IsDefault,
 }
 
 func (f Field) String() string {
@@ -98,21 +68,11 @@ func (data *Data) fieldPtrs(fields []Field) []interface{} {
 	var ptrs []interface{}
 	for _, field := range fields {
 		fieldMap := map[Field]interface{}{
-			TestId:        &data.TestId,
-			AssistantId:   &data.AssistantId,
-			Name:          &data.Name,
-			Purpose:       &data.Purpose,
-			Instructions:  &data.Instructions,
-			AiModel:       &data.AiModel,
-			OwnerUserId:   &data.OwnerUserId,
-			LogoType:      &data.LogoType,
-			LogoKey:       &data.LogoKey,
-			LogoLightPath: &data.LogoLightPath,
-			LogoDarkPath:  &data.LogoDarkPath,
-			Deleted:       &data.Deleted,
-			UpdatedAt:     &data.UpdatedAt,
-			CreatedAt:     &data.CreatedAt,
-			IsDefault:     &data.IsDefault,
+			ProjectId:   &data.ProjectId,
+			AssistantId: &data.AssistantId,
+			ResourceId:  &data.ResourceId,
+			UpdatedAt:   &data.UpdatedAt,
+			CreatedAt:   &data.CreatedAt,
 		}
 		ptrs = append(ptrs, fieldMap[field])
 	}
@@ -121,39 +81,19 @@ func (data *Data) fieldPtrs(fields []Field) []interface{} {
 
 func (c *Facade) CreateMut(data *Data) *spanner.Mutation {
 	columns := []string{
-		TestId.String(),
+		ProjectId.String(),
 		AssistantId.String(),
-		Name.String(),
-		Purpose.String(),
-		Instructions.String(),
-		AiModel.String(),
-		OwnerUserId.String(),
-		LogoType.String(),
-		LogoKey.String(),
-		LogoLightPath.String(),
-		LogoDarkPath.String(),
-		Deleted.String(),
+		ResourceId.String(),
 		UpdatedAt.String(),
 		CreatedAt.String(),
-		IsDefault.String(),
 	}
 
 	values := []interface{}{
-		data.TestId,
+		data.ProjectId,
 		data.AssistantId,
-		data.Name,
-		data.Purpose,
-		data.Instructions,
-		data.AiModel,
-		data.OwnerUserId,
-		data.LogoType,
-		data.LogoKey,
-		data.LogoLightPath,
-		data.LogoDarkPath,
-		data.Deleted,
+		data.ResourceId,
 		data.UpdatedAt,
 		data.CreatedAt,
-		data.IsDefault,
 	}
 
 	return spanner.Insert(Table, columns, values)
@@ -177,6 +117,7 @@ func (c *Facade) Exists(
 	ctx context.Context,
 	projectId string,
 	assistantId string,
+	resourceId string,
 ) bool {
 	_, err := c.db.Single().ReadRow(
 		ctx,
@@ -184,6 +125,7 @@ func (c *Facade) Exists(
 		spanner.Key{
 			projectId,
 			assistantId,
+			resourceId,
 		},
 		[]string{string(ID)},
 	)
@@ -195,6 +137,7 @@ func (c *Facade) ExistsRtx(
 	tx *spanner.ReadOnlyTransaction,
 	projectId string,
 	assistantId string,
+	resourceId string,
 ) bool {
 	_, err := tx.ReadRow(
 		ctx,
@@ -202,6 +145,7 @@ func (c *Facade) ExistsRtx(
 		spanner.Key{
 			projectId,
 			assistantId,
+			resourceId,
 		},
 		[]string{string(ID)},
 	)
@@ -275,6 +219,7 @@ func (c *Facade) Find(
 	ctx context.Context,
 	projectId string,
 	assistantId string,
+	resourceId string,
 	fields []Field,
 ) (*Data, error) {
 	row, err := c.db.Single().ReadRow(
@@ -283,6 +228,7 @@ func (c *Facade) Find(
 		spanner.Key{
 			projectId,
 			assistantId,
+			resourceId,
 		},
 		utils.ToString(fields),
 	)
@@ -291,6 +237,7 @@ func (c *Facade) Find(
 			"error":        err,
 			"project_id":   projectId,
 			"assistant_id": assistantId,
+			"resource_id":  resourceId,
 			"fields":       fields,
 		})
 		return nil, err
@@ -304,6 +251,7 @@ func (c *Facade) Find(
 			"error":        err,
 			"project_id":   projectId,
 			"assistant_id": assistantId,
+			"resource_id":  resourceId,
 			"fields":       fields,
 		})
 		return nil, err
@@ -317,6 +265,7 @@ func (c *Facade) FindRtx(
 	rtx *spanner.ReadOnlyTransaction,
 	projectId string,
 	assistantId string,
+	resourceId string,
 	fields []Field,
 ) (*Data, error) {
 	row, err := rtx.ReadRow(
@@ -325,6 +274,7 @@ func (c *Facade) FindRtx(
 		spanner.Key{
 			projectId,
 			assistantId,
+			resourceId,
 		},
 		utils.ToString(fields),
 	)
@@ -333,6 +283,7 @@ func (c *Facade) FindRtx(
 			"error":        err,
 			"project_id":   projectId,
 			"assistant_id": assistantId,
+			"resource_id":  resourceId,
 			"fields":       fields,
 		})
 		return nil, err
@@ -346,6 +297,7 @@ func (c *Facade) FindRtx(
 			"error":        err,
 			"project_id":   projectId,
 			"assistant_id": assistantId,
+			"resource_id":  resourceId,
 			"fields":       fields,
 		})
 		return nil, err
@@ -359,11 +311,13 @@ type UpdateFields map[Field]interface{}
 func (c *Facade) UpdateMut(
 	projectId string,
 	assistantId string,
+	resourceId string,
 	data UpdateFields,
 ) *spanner.Mutation {
 	mutationData := map[string]interface{}{
 		ProjectId.String():   projectId,
 		AssistantId.String(): assistantId,
+		ResourceId.String():  resourceId,
 	}
 	for field, value := range data {
 		mutationData[field.String()] = value
@@ -376,11 +330,13 @@ func (c *Facade) Update(
 	ctx context.Context,
 	projectId string,
 	assistantId string,
+	resourceId string,
 	data UpdateFields,
 ) error {
 	mutation := c.UpdateMut(
 		projectId,
 		assistantId,
+		resourceId,
 		data,
 	)
 
@@ -398,10 +354,12 @@ func (c *Facade) Update(
 func (c *Facade) DeleteMut(
 	projectId string,
 	assistantId string,
+	resourceId string,
 ) *spanner.Mutation {
 	return spanner.Delete(Table, spanner.Key{
 		projectId,
 		assistantId,
+		resourceId,
 	})
 }
 
@@ -409,10 +367,12 @@ func (c *Facade) Delete(
 	ctx context.Context,
 	projectId string,
 	assistantId string,
+	resourceId string,
 ) error {
 	mutation := c.DeleteMut(
 		projectId,
 		assistantId,
+		resourceId,
 	)
 
 	if _, err := c.db.Apply(ctx, []*spanner.Mutation{mutation}); err != nil {
